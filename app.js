@@ -8,61 +8,50 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 5555;
 const AD_SERVER_URL = 'https://raw.githubusercontent.com/Jigsaw88/Spotify-Ad-List/refs/heads/main/Spotify%20Adblock.txt';
-const COOKIE_FILE = 'cookies.txt';
+const COOKIES_FILE = 'cookies.txt';
 
 let adServers = new Set();
 let lastUpdated = null;
+let spotifyCookies = '';
 
-// Initialize cookie parser
-app.use(cookieParser());
-
-// Function to load cookies from file
+// Load cookies from file
 function loadCookies() {
   try {
-    if (fs.existsSync(COOKIE_FILE)) {
-      const cookieData = fs.readFileSync(COOKIE_FILE, 'utf8');
-      return cookieData.split('\n')
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith('#'));
+    if (fs.existsSync(COOKIES_FILE)) {
+      const cookies = fs.readFileSync(COOKIES_FILE, 'utf8');
+      spotifyCookies = cookies.split('\n')
+        .filter(line => line.trim() && !line.startsWith('#') && line.includes('open.spotify.com'))
+        .map(line => {
+          const parts = line.split('\t');
+          return `${parts[5]}=${parts[6]}`;
+        })
+        .join('; ');
+      
+      console.log('Loaded Spotify cookies from file');
+    } else {
+      console.warn(`No cookies file found at ${COOKIES_FILE}`);
     }
   } catch (err) {
     console.error('Error loading cookies:', err);
   }
-  return [];
 }
 
-// Function to fetch and update ad servers list
-async function updateAdServers() {
-  try {
-    console.log('Fetching updated ad server list...');
-    const response = await axios.get(AD_SERVER_URL);
-    const servers = response.data.split('\n')
-      .map(server => server.trim())
-      .filter(server => server && !server.startsWith('#') && server !== '');
-    
-    adServers = new Set(servers);
-    lastUpdated = new Date();
-    console.log(`Ad servers updated at ${lastUpdated}. Total: ${adServers.size}`);
-  } catch (error) {
-    console.error('Failed to update ad servers:', error.message);
-  }
-}
+// Initialize cookie parser (but we won't use it for storing cookies)
+app.use(cookieParser());
 
-// CORS middleware
+// CORS middleware - must come before proxy
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Set CORS headers for all responses
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-
-// Middleware to inject cookies
-app.use((req, res, next) => {
-  const cookies = loadCookies();
-  if (cookies.length > 0) {
-    req.headers.cookie = cookies.join('; ');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
+  
   next();
 });
 
@@ -70,13 +59,11 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const host = req.headers.host;
   
-  // Check if request is to a known ad server
   if (host && adServers.has(host)) {
     console.log(`Blocked ad request to: ${host}`);
     return res.status(403).send('Ad blocked');
   }
   
-  // Additional checks for ad URLs in the path
   const blockedKeywords = ['ad', 'ads', 'advertising', 'tracking', 'analytics'];
   if (blockedKeywords.some(keyword => req.url.includes(keyword))) {
     console.log(`Blocked ad-related URL: ${req.url}`);
@@ -86,7 +73,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Proxy configuration for Spotify with cookie support
+// Proxy configuration for Spotify
 const spotifyProxy = createProxyMiddleware({
   target: 'https://open.spotify.com',
   changeOrigin: true,
@@ -94,28 +81,31 @@ const spotifyProxy = createProxyMiddleware({
     '*': '', // Remove domain restriction for cookies
   },
   onProxyReq: (proxyReq, req) => {
-    // Forward cookies from client to Spotify
-    if (req.headers.cookie) {
-      proxyReq.setHeader('cookie', req.headers.cookie);
+    // Always inject our cookies from the file
+    if (spotifyCookies) {
+      proxyReq.setHeader('cookie', spotifyCookies);
     }
     
     // Additional headers to mimic browser behavior
     proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
     proxyReq.setHeader('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8');
+    
+    if (req.url.includes('clienttoken')) {
+      proxyReq.setHeader('Origin', 'https://open.spotify.com');
+    }
   },
   onProxyRes: (proxyRes, req, res) => {
-    // Handle CORS headers
-    proxyRes.headers['access-control-allow-origin'] = '*';
+    // Ensure CORS headers are properly set
+    proxyRes.headers['access-control-allow-origin'] = req.headers.origin || '*';
     proxyRes.headers['access-control-allow-credentials'] = 'true';
     
-    // Store received cookies
+    // Remove all set-cookie headers to prevent browser from storing them
     if (proxyRes.headers['set-cookie']) {
-      const cookies = proxyRes.headers['set-cookie'].map(cookie => {
-        return cookie.split(';')[0]; // Get just the key=value part
-      });
-      
-      // Save new cookies to file
-      fs.writeFileSync(COOKIE_FILE, cookies.join('\n'));
+      delete proxyRes.headers['set-cookie'];
+    }
+    
+    if (req.url.includes('clienttoken')) {
+      proxyRes.headers['access-control-allow-origin'] = req.headers.origin || '*';
     }
   },
   secure: false,
@@ -134,28 +124,14 @@ app.get('/blocked-domains', (req, res) => {
   });
 });
 
-// Add endpoint to view current cookies
-app.get('/cookies', (req, res) => {
-  try {
-    const cookies = loadCookies();
-    res.json({
-      count: cookies.length,
-      cookies: cookies
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load cookies' });
-  }
-});
-
 // Start server
+loadCookies(); // Load cookies at startup
 updateAdServers().then(() => {
   setInterval(updateAdServers, 6 * 60 * 60 * 1000);
   
   app.listen(PORT, () => {
     console.log(`\nSpotify Ad-Free Proxy running on http://localhost:${PORT}`);
     console.log(`Ad server list will be refreshed every 6 hours`);
-    console.log(`Cookies will be loaded from ${COOKIE_FILE}`);
-    console.log(`Access /blocked-domains to view current blocking rules`);
-    console.log(`Access /cookies to view current authentication cookies\n`);
+    console.log(`Access /blocked-domains to view current blocking rules\n`);
   });
 });
