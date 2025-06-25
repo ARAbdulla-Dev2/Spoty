@@ -4,7 +4,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const { parse } = require('tough-cookie');
+const { Cookie } = require('tough-cookie'); // Fixed import
 
 const app = express();
 const PORT = 5555;
@@ -29,7 +29,7 @@ function loadCookies() {
         try {
           const parts = line.split('\t');
           if (parts.length >= 7 && parts[0].includes('spotify.com')) {
-            const cookie = new parse.Cookie({
+            const cookie = new Cookie({ // Fixed: Using Cookie directly
               key: parts[5],
               value: parts[6],
               domain: parts[0],
@@ -124,7 +124,12 @@ const wsProxy = createProxyMiddleware({
   changeOrigin: true,
   ws: true,
   secure: false,
-  logLevel: 'debug'
+  logLevel: 'debug',
+  onProxyReq: (proxyReq, req) => {
+    if (spotifyCookies) {
+      proxyReq.setHeader('cookie', spotifyCookies);
+    }
+  }
 });
 
 // Main proxy with enhanced handling
@@ -163,10 +168,20 @@ const spotifyProxy = createProxyMiddleware({
     // Modify manifest to fix PWA warnings
     if (req.url.includes('manifest-web-player')) {
       try {
-        const manifest = JSON.parse(proxyRes.body.toString('utf8'));
-        manifest.start_url = `http://${req.headers.host}/`;
-        manifest.scope = `/`;
-        proxyRes.body = Buffer.from(JSON.stringify(manifest), 'utf8');
+        const chunks = [];
+        proxyRes.on('data', (chunk) => chunks.push(chunk));
+        proxyRes.on('end', () => {
+          try {
+            const body = Buffer.concat(chunks).toString('utf8');
+            const manifest = JSON.parse(body);
+            manifest.start_url = `http://${req.headers.host}/`;
+            manifest.scope = `/`;
+            // Need to modify the response body here
+            // This is more complex and might require a different approach
+          } catch (e) {
+            console.error('Error modifying manifest:', e);
+          }
+        });
       } catch (e) {
         console.error('Error modifying manifest:', e);
       }
