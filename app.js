@@ -39,6 +39,24 @@ function loadCookies() {
 // Initialize cookie parser (but we won't use it for storing cookies)
 app.use(cookieParser());
 
+// Function to fetch and update ad servers list
+async function updateAdServers() {
+  try {
+    console.log('Fetching updated ad server list...');
+    const response = await axios.get(AD_SERVER_URL);
+    const servers = response.data.split('\n')
+      .map(server => server.trim())
+      .filter(server => server && !server.startsWith('#') && server !== '');
+    
+    adServers = new Set(servers);
+    lastUpdated = new Date();
+    console.log(`Ad servers updated at ${lastUpdated}. Total: ${adServers.size}`);
+  } catch (error) {
+    console.error('Failed to update ad servers:', error.message);
+  }
+}
+
+
 // CORS middleware - must come before proxy
 app.use((req, res, next) => {
   // Set CORS headers for all responses
