@@ -1,0 +1,32 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.spotify.com	TRUE	/	TRUE	1782377627	sp_t	1181187044ab1dc2d2e1eef297265b4f
+.spotify.com	TRUE	/	TRUE	1750927803	sp_landing	https%3A%2F%2Fopen.spotify.com%2F%3Fsp_cid%3D1181187044ab1dc2d2e1eef297265b4f%26device%3Ddesktop
+.spotify.com	TRUE	/	TRUE	1750843280	_cs_mk_ga	0.8198990263947336_1750841480936
+open.spotify.com	FALSE	/	FALSE	0	sss	1
+.spotify.com	TRUE	/	TRUE	1782377632	sp_adid	cdabb9c8-1251-4cba-a285-f0c108c99491
+.spotify.com	TRUE	/	FALSE	1750928030	_gid	GA1.2.190153555.1750841509
+.spotify.com	TRUE	/	TRUE	1750845183	sp_dc	AQB0A8FMvR9_ARCLdZs86xziFLbvO3_rMJLHLYPIKv1YEILiUkvDrYRXr11Ygqd-9qgt2GVj0JrQR0IPNJb48jyQXts7_D0W1JSpMfbSdwJ529By9vNQ1IKfgjgT8wLxbasqD0eAKQYCwXPyLgrtPxtfB0k577X08VotT42-1OfT4GQyk3v_gK7hU6d9xbN0XRFSMhv7nXD27ClZYGQ
+.spotify.com	TRUE	/	TRUE	1785401583	sp_m	lk-en
+.spotify.com	TRUE	/	TRUE	1756025583	sp_last_utm	%7B%22utm_campaign%22%3A%22your_account%22%2C%22utm_medium%22%3A%22menu%22%2C%22utm_source%22%3A%22spotify%22%7D
+.spotify.com	TRUE	/	TRUE	1756025582	sp_gaid	0088fc35b7e89e6125d358bc8f3d36958ee8ce679409dc3b80ba52
+.spotify.com	TRUE	/	FALSE	1758617593	_gcl_au	1.1.1346029654.1750841593
+.spotify.com	TRUE	/	FALSE	1750841654	_gat_UA-5784146-31	1
+.spotify.com	TRUE	/	FALSE	1785028292	_scid	dPwVqEUrJJlcXaZf164NPZMB0Sf4owtH
+.spotify.com	TRUE	/	FALSE	1785005598	_cs_c	0
+.spotify.com	TRUE	/	TRUE	1784919219	_hp5_event_props.4043975597	%7B%22loggedIn%22%3Atrue%2C%22market%22%3A%22lk%22%2C%22language%22%3A%22en%22%7D
+.spotify.com	TRUE	/	TRUE	1784919219	_hp5_meta.4043975597	%7B%22userId%22%3A%226366196044947741%22%2C%22sessionId%22%3A%221990057542087869%22%2C%22sessionProperties%22%3A%7B%22time%22%3A1750841598539%2C%22referrer%22%3A%22https%3A%2F%2Fwww.spotify.com%2Flk-en%2Faccount%2Foverview%2F%3Futm_source%3Dspotify%26utm_medium%3Dmenu%26utm_campaign%3Dyour_account%22%2C%22id%22%3A%221990057542087869%22%2C%22search_keyword%22%3A%22%22%2C%22utm%22%3A%7B%22source%22%3A%22%22%2C%22medium%22%3A%22%22%2C%22term%22%3A%22%22%2C%22content%22%3A%22%22%2C%22campaign%22%3A%22%22%7D%2C%22initial_pageview_info%22%3A%7B%22time%22%3A1750841598539%2C%22id%22%3A%224267081259608576%22%2C%22title%22%3A%22Spotify%22%2C%22previous_page%22%3A%22%2Flk-en%2Faccount%2Foverview%2F%22%2C%22url%22%3A%7B%22domain%22%3A%22www.spotify.com%22%2C%22path%22%3A%22%2Flk-en%2Faccount%2Foverview%2F%22%2C%22query%22%3A%22%22%2C%22hash%22%3A%22%22%7D%2C%22source_properties%22%3A%7B%22screen_height%22%3A731%2C%22screen_width%22%3A1600%7D%2C%22properties%22%3A%7B%7D%7D%7D%2C%22identity%22%3A%220088fc35b7e89e6125d358bc8f3d36958ee8ce679409dc3b80ba52%22%7D
+.spotify.com	TRUE	/	FALSE	1782377598	OptanonAlertBoxClosed	2025-06-25T08:53:18.995Z
+.spotify.com	TRUE	/	FALSE	1751446402	_ScCbts	%5B%5D
+.spotify.com	TRUE	/	FALSE	1785028307	_sctr	1%7C1750789800000
+.spotify.com	TRUE	/	FALSE	1785028317	_scid_r	j3wVqEUrJJlcXaZf164NPZMB0Sf4owtHkpYafg
+.spotify.com	TRUE	/	FALSE	1785005598	_cs_id	81e821e6-ed43-add1-a227-f5acd449b245.1750841598.1.1750841619.1750841598.1739197584.1785005598340.1.x
+.spotify.com	TRUE	/	FALSE	1750843419	_cs_s	3.5.1.9.1750843419774
+.spotify.com	TRUE	/	TRUE	1784919219	_hp5_let.4043975597	1750841619930
+.spotify.com	TRUE	/	FALSE	1785401624	_ga_S35RN5WNT2	GS2.1.s1750841594$o1$g1$t1750841624$j30$l0$h0
+.spotify.com	TRUE	/	FALSE	1785401631	_ga	GA1.1.243281040.1750841509
+.spotify.com	TRUE	/	FALSE	1785401631	_ga_ZWG1NSHWD8	GS2.1.s1750841511$o1$g1$t1750841631$j60$l0$h0
+.spotify.com	TRUE	/	FALSE	1782377631	OptanonConsent	isGpcEnabled=0&datestamp=Wed+Jun+25+2025+14%3A23%3A51+GMT%2B0530+(India+Standard+Time)&version=202411.2.0&browserGpcFlag=0&isIABGlobal=false&hosts=&landingPath=NotLandingPage&groups=s00%3A1%2Cf00%3A1%2Cm00%3A1%2Ct00%3A1%2Ci00%3A1%2Cf11%3A1%2Cm03%3A1&AwaitingReconsent=false&geolocation=LK%3B1
+.spotify.com	TRUE	/	FALSE	1785401631	_ga_BMC5VGR8YS	GS2.2.s1750841516$o1$g1$t1750841631$j23$l0$h0
